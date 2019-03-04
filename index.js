@@ -2,22 +2,26 @@ const TelegramBot = require('node-telegram-bot-api')
 
 const TOKEN  = "717477348:AAGVs7b9ra_m-E4cyluTmMgA-SGXUSz-noY"
 
-const bot = new TelegramBot(TOKEN, {polling: true})
+const bot = new TelegramBot(token, {polling: true});
 
-// bot.on('message', msg => {
-//     bot.sendMessage(msg.chat.id, `hello from heroku, bot says: "hi, ${msg.from.first_name}`)
-// })
+// Matches "/echo [whatever]"
+bot.onText(/\/echo (.+)/, (msg, match) => {
+  // 'msg' is the received Message from Telegram
+  // 'match' is the result of executing the regexp above on the text content
+  // of the message
 
-bot.onText(echo, function (msg, match) {
-    var fromId = msg.from.id;
-    var resp = match[1];
-    bot.sendMessage(fromId, resp);
-})
+  const chatId = msg.chat.id;
+  const resp = match[1]; // the captured "whatever"
 
-// Простая команда без параметров.
-bot.on('message', function (msg) {
-    var chatId = msg.chat.id;
-    // Фотография может быть: путь к файлу, поток(stream) или параметр file_id
-    var photo = 'cats.png';
-    bot.sendPhoto(chatId, photo, {caption: 'Милые котята'});
-})
+  // send back the matched "whatever" to the chat
+  bot.sendMessage(chatId, resp);
+});
+
+// Listen for any kind of message. There are different kinds of
+// messages.
+bot.on('message', (msg) => {
+  const chatId = msg.chat.id;
+
+  // send a message to the chat acknowledging receipt of their message
+  bot.sendMessage(chatId, 'Received your message');
+});
